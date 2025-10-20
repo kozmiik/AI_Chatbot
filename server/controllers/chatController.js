@@ -6,6 +6,20 @@ export default async function chatController(req, res) {
   try {
     const { message } = req.body;
 
+    // Input validation
+    if (!message || typeof message !== "string" || message.trim() === "") {
+      return res
+        .status(400)
+        .json({ error: "Invalid input: message must be a non-empty string." });
+    }
+
+    // Prevent abuse or extremely long prompts
+    if (message.length > 1000) {
+      return res
+        .status(400)
+        .json({ error: "Message too long. Please keep under 1000 characters." });
+    }
+
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
     const result = await model.generateContent(message);
 
