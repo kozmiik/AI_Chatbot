@@ -20,7 +20,7 @@ export default async function chatController(req, res) {
         .json({ error: "Message too long. Please keep under 1000 characters." });
     }
 
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-pro" });
     const result = await model.generateContent(message);
 
     const botReply = result.response.text();
