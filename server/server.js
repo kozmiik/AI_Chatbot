@@ -1,5 +1,7 @@
-import express from "express";
 import dotenv from "dotenv";
+dotenv.config();
+
+import express from "express";
 import cors from "cors";
 import connectDB from "./config/db.js";
 import authRoutes from "./routes/auth.js";
@@ -7,7 +9,7 @@ import chatController from "./controllers/chatController.js";
 import chatHistoryRoutes from "./routes/chatHistory.js";
 import { protect } from "./middleware/authMiddleware.js";
 
-dotenv.config();
+
 
 // Connect Database
 connectDB();

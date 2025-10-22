@@ -90,7 +90,10 @@ export default function ChatPage() {
   };
 
   // Prevent rendering until user is loaded
-  if (!user) return null;
+  if (user === null) {
+  return <div className="text-center mt-10">Loading...</div>;
+}
+
 
   return (
     <div className="h-screen flex flex-col bg-gray-50">

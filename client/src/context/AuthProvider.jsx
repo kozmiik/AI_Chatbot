@@ -14,41 +14,52 @@ export const AuthProvider = ({ children }) => {
 
   // Login function
   const login = async (username, password) => {
-    // eslint-disable-next-line no-useless-catch
     try {
       const res = await fetch("http://localhost:5000/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password }),
       });
+
       const data = await res.json();
-      if (res.ok) {
-        setUser(data);
-        localStorage.setItem("user", JSON.stringify(data));
+
+      if (res.ok && data.token) {
+        // Save both token and username (critical for chat API)
+        const userData = {
+          username: data.username,
+          token: data.token,
+        };
+
+        setUser(userData);
+        localStorage.setItem("user", JSON.stringify(userData));
+        return userData;
       } else {
         throw new Error(data.message || "Login failed");
       }
-      return data;
     } catch (err) {
+      console.error("Login error:", err.message);
       throw err;
     }
   };
 
   // Register function
   const register = async (username, password) => {
-    // eslint-disable-next-line no-useless-catch
     try {
       const res = await fetch("http://localhost:5000/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password }),
       });
+
       const data = await res.json();
+
       if (!res.ok) {
         throw new Error(data.message || "Registration failed");
       }
+
       return data;
     } catch (err) {
+      console.error("Registration error:", err.message);
       throw err;
     }
   };
