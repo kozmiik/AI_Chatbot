@@ -1,63 +1,72 @@
-import { useState, useContext } from "react";
-import { AuthContext } from "../context/AuthContext";
+import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 export default function LoginPage() {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const { login } = useContext(AuthContext);
+  const { login } = useAuth();
   const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
+  const [identifier, setIdentifier] = useState(""); // username or email
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
-    try {
-      const data = await login(username, password);
-      if (data && data.token) {
-        console.log("Login successful:", data);
-        navigate("/"); // Redirect to chat
-      } else {
-        setError("Invalid login response from server.");
-      }
-    } catch (err) {
-      console.error("Login failed:", err);
-      setError(err.message || "Login failed");
-    }
-  };
+  const handleLogin = async (e) => {
+  e.preventDefault();
+  setError("");
+
+  try {
+    const data = await login(identifier, password);
+    console.log("Login successful:", data);
+    navigate("/chat"); // redirect
+  } catch (err) {
+    console.error("Login failed:", err);
+    setError(err.message || "Invalid credentials");
+  }
+};
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen bg-gray-100">
-      <div className="bg-white p-6 rounded shadow-md w-80">
-        <h2 className="text-xl font-semibold mb-4">Login</h2>
-        <form onSubmit={handleSubmit}>
-          <input
-            type="text"
-            placeholder="Username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            className="border p-2 w-full mb-2 rounded"
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="border p-2 w-full mb-2 rounded"
-          />
-          {error && <p className="text-red-500 text-sm mb-2">{error}</p>}
+    <div className="flex items-center justify-center min-h-screen bg-gray-50">
+      <div className="bg-white shadow-md rounded-xl p-8 w-full max-w-md">
+        <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
+        <form onSubmit={handleLogin} className="space-y-4">
+          <div>
+            <label className="block text-gray-700 mb-1">Username or Email</label>
+            <input
+              type="text"
+              value={identifier}
+              onChange={(e) => setIdentifier(e.target.value)}
+              className="w-full border border-gray-300 rounded-md p-2"
+              placeholder="Enter username or email"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-gray-700 mb-1">Password</label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full border border-gray-300 rounded-md p-2"
+              placeholder="Enter password"
+              required
+            />
+          </div>
+
+          {error && <p className="text-red-500 text-sm">{error}</p>}
+
           <button
             type="submit"
-            className="bg-blue-500 text-white px-3 py-2 w-full rounded hover:bg-blue-600"
+            className="w-full bg-blue-600 text-white font-semibold py-2 rounded-md hover:bg-blue-700"
           >
             Login
           </button>
         </form>
-        <p className="text-sm mt-3 text-center">
+
+        <p className="mt-4 text-center text-sm">
           Don’t have an account?{" "}
-          <Link to="/register" className="text-blue-500 hover:underline">
-            Register
+          <Link to="/register" className="text-blue-600 hover:underline">
+            Register here
           </Link>
         </p>
       </div>

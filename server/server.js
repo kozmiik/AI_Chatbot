@@ -10,18 +10,26 @@ import chatHistoryRoutes from "./routes/chatHistory.js";
 import { protect } from "./middleware/authMiddleware.js";
 
 
-
-// Connect Database
-connectDB();
-
 const app = express();
 app.use(express.json());
 app.use(cors());
 
+// Connect to DB (with error handling)
+connectDB().catch((err) => {
+  console.error("MongoDB connection failed:", err);
+  process.exit(1);
+});
+
 // Routes
 app.use("/api/auth", authRoutes);
-app.post("/api/chat", protect, chatController); // protect ensures only logged-in users can chat
+app.post("/api/chat", protect, chatController);
 app.use("/api/chat/history", protect, chatHistoryRoutes);
+
+// Global error handler (to avoid empty responses)
+app.use((err, req, res, next) => {
+  console.error("Unhandled error:", err);
+  res.status(500).json({ error: "Server error. Please try again later." });
+});
 
 // Server
 const PORT = process.env.PORT || 5000;

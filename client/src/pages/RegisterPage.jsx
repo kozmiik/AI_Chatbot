@@ -1,69 +1,86 @@
-import { useState, useContext } from "react";
+import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { AuthContext } from "../context/AuthContext";
+import { useAuth } from "../context/AuthContext";
 
 export default function RegisterPage() {
+  const { register } = useAuth();
   const navigate = useNavigate();
-  const { login } = useContext(AuthContext);
 
   const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
-  const handleSubmit = async (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
-    try {
-      const res = await fetch("http://localhost:5000/api/auth/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password }),
-      });
-      const data = await res.json();
+    setError("");
 
-      if (res.ok) {
-        login({ username });
-        navigate("/chat");
-      } else {
-        setError(data.message || "Registration failed");
-      }
-    // eslint-disable-next-line no-unused-vars
+    try {
+      await register(username, email, password);
+      navigate("/chat"); // redirect to chat
     } catch (err) {
-      setError("Server error. Try again.");
+      setError(err.message || "Failed to register");
     }
   };
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen bg-gray-50">
-      <h1 className="text-2xl font-bold mb-4">Register</h1>
-      <form onSubmit={handleSubmit} className="flex flex-col gap-2 w-64">
-        <input
-          type="text"
-          placeholder="Username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          className="p-2 border rounded"
-          required
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="p-2 border rounded"
-          required
-        />
-        {error && <p className="text-red-500">{error}</p>}
-        <button type="submit" className="p-2 bg-green-500 text-white rounded">
-          Register
-        </button>
-      </form>
-      <p className="mt-2">
-        Already have an account?{" "}
-        <Link to="/login" className="text-blue-600">
-          Login
-        </Link>
-      </p>
+    <div className="flex items-center justify-center min-h-screen bg-gray-50">
+      <div className="bg-white shadow-md rounded-xl p-8 w-full max-w-md">
+        <h2 className="text-2xl font-bold mb-6 text-center">Create Account</h2>
+        <form onSubmit={handleRegister} className="space-y-4">
+          <div>
+            <label className="block text-gray-700 mb-1">Username</label>
+            <input
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              className="w-full border border-gray-300 rounded-md p-2"
+              placeholder="Enter username"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-gray-700 mb-1">Email</label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full border border-gray-300 rounded-md p-2"
+              placeholder="Enter email"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-gray-700 mb-1">Password</label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full border border-gray-300 rounded-md p-2"
+              placeholder="Enter password"
+              required
+            />
+          </div>
+
+          {error && <p className="text-red-500 text-sm">{error}</p>}
+
+          <button
+            type="submit"
+            className="w-full bg-green-600 text-white font-semibold py-2 rounded-md hover:bg-green-700"
+          >
+            Register
+          </button>
+        </form>
+
+        <p className="mt-4 text-center text-sm">
+          Already have an account?{" "}
+          <Link to="/login" className="text-blue-600 hover:underline">
+            Login here
+          </Link>
+        </p>
+      </div>
     </div>
   );
 }
-

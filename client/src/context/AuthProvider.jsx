@@ -1,70 +1,54 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { AuthContext } from "./AuthContext";
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
 
-  // Load user from localStorage on mount
   useEffect(() => {
+    // Restore user from localStorage on refresh
     const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
+    if (storedUser) setUser(JSON.parse(storedUser));
   }, []);
 
-  // Login function
-  const login = async (username, password) => {
-    try {
-      const res = await fetch("http://localhost:5000/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password }),
-      });
+  const login = async (identifier, password) => {
+  const res = await fetch("http://localhost:5000/api/auth/login", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ identifier, password }),
+  });
 
-      const data = await res.json();
+  let data;
+  try {
+    data = await res.json(); // attempt to parse JSON
+  // eslint-disable-next-line no-unused-vars
+  } catch (err) {
+    throw new Error("Server returned invalid response");
+  }
 
-      if (res.ok && data.token) {
-        // Save both token and username (critical for chat API)
-        const userData = {
-          username: data.username,
-          token: data.token,
-        };
+  if (!res.ok) {
+    throw new Error(data.message || "Login failed");
+  }
 
-        setUser(userData);
-        localStorage.setItem("user", JSON.stringify(userData));
-        return userData;
-      } else {
-        throw new Error(data.message || "Login failed");
-      }
-    } catch (err) {
-      console.error("Login error:", err.message);
-      throw err;
-    }
+  setUser(data);
+  localStorage.setItem("user", JSON.stringify(data));
+  return data;
+};
+
+
+  const register = async (username, email, password) => {
+    const res = await fetch("http://localhost:5000/api/auth/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username, email, password }),
+    });
+
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || "Registration failed");
+
+    setUser(data.user);
+    localStorage.setItem("user", JSON.stringify(data.user));
   };
 
-  // Register function
-  const register = async (username, password) => {
-    try {
-      const res = await fetch("http://localhost:5000/api/auth/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password }),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.message || "Registration failed");
-      }
-
-      return data;
-    } catch (err) {
-      console.error("Registration error:", err.message);
-      throw err;
-    }
-  };
-
-  // Logout function
   const logout = () => {
     setUser(null);
     localStorage.removeItem("user");
