@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 import { useState, useContext, useEffect, useRef } from "react";
 import ChatMessage from "../components/ChatMessage";
 import ChatInput from "../components/ChatInput";
@@ -23,7 +24,7 @@ export default function ChatPage() {
 
     const fetchHistory = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/chat/history", {
+        const res = await fetch(`${process.env.REACT_APP_API_URL}/api/chat/history`, {
           headers: { Authorization: `Bearer ${user.token}` },
         });
 
@@ -55,7 +56,7 @@ export default function ChatPage() {
     setMessages((prev) => [...prev, newMsg]);
 
     try {
-      const response = await fetch("http://localhost:5000/api/chat", {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/chat`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

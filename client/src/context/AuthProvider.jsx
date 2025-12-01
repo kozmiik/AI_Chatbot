@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 import React, { useState, useEffect } from "react";
 import { AuthContext } from "./AuthContext";
 
@@ -11,7 +12,7 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = async (identifier, password) => {
-  const res = await fetch("http://localhost:5000/api/auth/login", {
+  const res = await fetch(`${process.env.REACT_APP_API_URL}/api/auth/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ identifier, password }),
@@ -36,7 +37,7 @@ export const AuthProvider = ({ children }) => {
 
 
   const register = async (username, email, password) => {
-    const res = await fetch("http://localhost:5000/api/auth/register", {
+    const res = await fetch(`${process.env.REACT_APP_API_URL}/api/auth/register`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ username, email, password }),
