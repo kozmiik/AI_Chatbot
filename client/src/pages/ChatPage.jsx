@@ -1,9 +1,11 @@
-/* eslint-disable no-undef */
+ 
 import { useState, useContext, useEffect, useRef } from "react";
 import ChatMessage from "../components/ChatMessage";
 import ChatInput from "../components/ChatInput";
 import { AuthContext } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+
+const API = import.meta.env.VITE_API_URL;
 
 export default function ChatPage() {
   const [messages, setMessages] = useState([]);
@@ -24,7 +26,7 @@ export default function ChatPage() {
 
     const fetchHistory = async () => {
       try {
-        const res = await fetch(`${process.env.REACT_APP_API_URL}/api/chat/history`, {
+        const res = await fetch(`${API}/api/chat/history`, {
           headers: { Authorization: `Bearer ${user.token}` },
         });
 
@@ -56,7 +58,7 @@ export default function ChatPage() {
     setMessages((prev) => [...prev, newMsg]);
 
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/chat`, {
+      const response = await fetch(`${API}/api/chat`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
