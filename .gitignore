@@ -17,7 +17,7 @@ build/
 # ---------------------------
 # Environment & credentials
 # ---------------------------
-client/.env
+client/frontend.env
 server/.env
 .env
 .env.local
