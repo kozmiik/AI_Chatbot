@@ -31,4 +31,10 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: "Server error. Please try again later." });
 });
 
+//render
+app.use(cors({
+  origin: "https://project1-frontend.onrender.com",
+  credentials: true
+}));
+
 export default app;
